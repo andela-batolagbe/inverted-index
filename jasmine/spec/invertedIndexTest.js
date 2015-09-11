@@ -14,7 +14,6 @@ beforeEach(function() {
   ];
 
   inverted = new getIndex();
-
 });
 
 describe("Read book data,", function() {

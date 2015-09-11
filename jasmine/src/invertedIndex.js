@@ -2,25 +2,36 @@
 for the JQuery AJAX file reading functionality to 
 work */
 
-//declaration of some variables
-var index = [],
-  result = {},
-  holder = [],
-  len, i, temp = [],
-  indexArray = [];
-
 // uncomment the variable and equate it to the file path to load file contents
 //var fileRef = 'books.json';
 
 
 //main get index function
-var getIndex = function(file, stringKeys) {
+var getIndex = function(file, stringKeys) {};
 
 //function to read file contents
-this.readTexts = function(obj) {
+getIndex.prototype.readTexts = function(files) {
+
+  //check file type if its an array, variable or file path
+  var obj;
+  if (typeof files === typeof '') {
+
+    //syncronous ajax request to read file if it is a file path
+    $.ajax({
+      url: files,
+      async: false,
+      dataType: 'json',
+      success: function(json) {
+        obj = json;
+      }
+    });
+
+  } else {
+    obj = files;
+  }
 
   //iterate trough JSON properties and push sentences to holding array
-  var k = 0;
+  var k = 0, holder = [];
   do {
     var grab = [];
     for (var j in obj[k]) {
@@ -37,16 +48,18 @@ this.readTexts = function(obj) {
 };
 
 //function for creating index
-this.createIndex = function(file) {
+getIndex.prototype.createIndex = function(file) {
 
   //call the readTexts function to read contents
-  var holder = this.readTexts(file);
-
+  var holder = getIndex.prototype.readTexts(file);
+ 
+  var result = {}, i, index = [];
+ 
   //iterate through holder, split by all punctuations and push words to result
   for (i = 0; i < holder.length; i++) {
-    var temp = [];
-    var words = holder[i].split(/[\s,.:;]/g);
 
+    var words = holder[i].split(/[\s\W\d]+/g);
+    var temp = [];
     // push words to index array
     for (var j = 0; j < words.length; j++) {
       temp.push(words[j]);
@@ -77,29 +90,12 @@ this.createIndex = function(file) {
   }
   //stringify all result and return
   var toJSON = JSON.stringify(result);
+
   return toJSON;
 };
 
 // index search function
-this.searchIndex = function(files, stringKeys) {
-
-  //check file type if its an array, variable or file path
-  var file;
-  if (typeof files === typeof '') {
-
-    //syncronous ajax request to read file if it is a file path
-    $.ajax({
-      url: files,
-      async: false,
-      dataType: 'json',
-      success: function(json) {
-        file = json;
-      }
-    });
-
-  } else {
-    file = files;
-  }
+getIndex.prototype.searchIndex = function(files, stringKeys) {
 
   var converter;
   //check if keys is an array of strings or a string
@@ -111,10 +107,10 @@ this.searchIndex = function(files, stringKeys) {
   }
   //convert string to lowercase and split
   var lower = converter.toLowerCase();
-  var keys = lower.split(/[\s\,\.\:]/);
+  var keys = lower.split(/[\s\W\d]+/g);
 
   //call the getIndex function 
-  var index = this.createIndex(file);
+  var index = getIndex.prototype.createIndex(files);
 
   //parse the returned index file;
 
@@ -129,12 +125,14 @@ this.searchIndex = function(files, stringKeys) {
       indexes[keys[i]] = parser[keys[i]];
     }
 
+    return JSON.stringify(indexes);
     //return results
-  return JSON.stringify(indexes);
+  //return JSON.stringify(indexes);
 };
 
-};
+
 //uncomment this function to run loaded files using the fileRef variable
 // search keys can take a single word, sentences and an array of words 
 
-//getIndex.searchIndex(fileRef, "your search key");
+
+//getIndex.prototype.searchIndex(fileRef, "your keys");
