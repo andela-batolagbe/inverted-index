@@ -2,67 +2,91 @@
 for the JQuery AJAX file reading functionality to 
 work */
 
-//variables declaration
+//declaration of some variables
 var index = [],
-  result = [],
+  result = {},
   holder = [],
   len, i, temp = [],
   indexArray = [];
 
-var fileRef = 'books.json';
+// uncomment the variable and equate it to the file path to load file contents
+//var fileRef = 'books.json';
 
 
 //main get index function
-var getIndex = function(file, stringKeys){
-
-//getIndex.prototype.indexList(file, stringKeys);
-};
+var getIndex = function(file, stringKeys) {
 
 //function to read file contents
-getIndex.prototype.readTexts = function(obj) {
+this.readTexts = function(obj) {
 
   //iterate trough JSON properties and push sentences to holding array
   var k = 0;
   do {
+    var grab = [];
     for (var j in obj[k]) {
-      holder.push(obj[k][j].toLowerCase());
+
+      var collector = obj[k];
+      grab.push(collector[j].toLowerCase());
     }
+    holder.push(grab.join(' '));
     k += 1;
   }
   while (k < obj.length);
 
   return holder;
-
-
 };
 
 //function for creating index
-getIndex.prototype.createIndex = function(file) {
+this.createIndex = function(file) {
 
   //call the readTexts function to read contents
-  var holder = getIndex.prototype.readTexts(file);
+  var holder = this.readTexts(file);
 
   //iterate through holder, split by all punctuations and push words to result
   for (i = 0; i < holder.length; i++) {
     var temp = [];
-    var words = holder[i].split(/[\s\,\.\:]/);
+    var words = holder[i].split(/[\s,.:;]/g);
 
-  // push words to index array
+    // push words to index array
     for (var j = 0; j < words.length; j++) {
       temp.push(words[j]);
     }
     index.push(temp);
   }
-  return index;
+
+  //assign the array of words in each document to a variable
+  for (var k = 0; k < index.length; k++) {
+
+    var pass = index[k];
+
+    //take each word and locate them in the entire document 
+    for (var a = 0; a < pass.length; a++) {
+
+      var holdArr = [];
+      for (var b = 0; b < index.length; b++) {
+        if (index[b].indexOf(pass[a]) >= 0) {
+
+          //push the index of the documents they belong the holding array
+          holdArr.push(index.indexOf(index[b]));
+        }
+
+        //assign words to their index in the result object
+        result[pass[a]] = holdArr;
+      }
+    }
+  }
+  //stringify all result and return
+  var toJSON = JSON.stringify(result);
+  return toJSON;
 };
 
 // index search function
-getIndex.prototype.searchIndex = function(files, stringKeys) {
-  
+this.searchIndex = function(files, stringKeys) {
+
   //check file type if its an array, variable or file path
   var file;
   if (typeof files === typeof '') {
-  
+
     //syncronous ajax request to read file if it is a file path
     $.ajax({
       url: files,
@@ -73,7 +97,7 @@ getIndex.prototype.searchIndex = function(files, stringKeys) {
       }
     });
 
-   } else {
+  } else {
     file = files;
   }
 
@@ -85,42 +109,32 @@ getIndex.prototype.searchIndex = function(files, stringKeys) {
   } else {
     converter = stringKeys;
   }
-   //convert string to lowercase and split
+  //convert string to lowercase and split
   var lower = converter.toLowerCase();
   var keys = lower.split(/[\s\,\.\:]/);
 
   //call the getIndex function 
-  var index = getIndex.prototype.createIndex(file);
+  var index = this.createIndex(file);
 
-  //loop through keys and push matching keys 
-  //with their corresponding index into results
-  for (var i = 0; i < keys.length; i++) {
-    for (var j = 0; j < index.length; j++) {
-      if (index[j].indexOf(keys[i]) >= 0) {
-        result.push([keys[i], index.indexOf(index[j])]);
-      }
+  //parse the returned index file;
 
+  var parser = JSON.parse(index);
+  
+  var indexes = {};
+
+  //check if the keys are in the index list;
+  for (var i = 0; i<keys.length; i++)
+    if (parser.hasOwnProperty(keys[i]) === true){
+
+      indexes[keys[i]] = parser[keys[i]];
     }
-  }
-  return result;
 
+    //return results
+  return JSON.stringify(indexes);
 };
 
-//function to generate the index array, main fuction to be called
-//with the parameters
-getIndex.prototype.indexList = function(files, stringKeys) {
-
-//call the search index function
-var indexes =  getIndex.prototype.searchIndex(files, stringKeys);
-
-//loop trough the search results and push the
-//index numbers to indexArray;
-for (var l = 0; l <indexes.length; l++){
-    indexArray.push(indexes[l][1]);
-}
-
-return indexArray;
 };
+//uncomment this function to run loaded files using the fileRef variable
+// search keys can take a single word, sentences and an array of words 
 
-
-//getIndex.prototype.indexList(fileRef, ['Alice', 'FALLS', 'Lord', 'elf', 'wizard', 'Imagination']);
+//getIndex.searchIndex(fileRef, "your search key");
