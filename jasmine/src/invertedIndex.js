@@ -125,9 +125,11 @@ getIndex.prototype.searchIndex = function(files, stringKeys) {
       indexes[keys[i]] = parser[keys[i]];
     }
 
+    //log results to the console
+    console.log(JSON.stringify(indexes));
+
+    //return for test purpose
     return JSON.stringify(indexes);
-    //return results
-  //return JSON.stringify(indexes);
 };
 
 

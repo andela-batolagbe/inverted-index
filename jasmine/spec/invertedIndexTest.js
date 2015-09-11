@@ -53,7 +53,6 @@ describe("Populate Index,", function() {
 
    parser = JSON.parse(indexRunner);
 
-    console.log(parser);
     expect(parser.hasOwnProperty('of')).toBe(true);
     expect(parser.of).toEqual([0, 1]);
     expect(parser.hasOwnProperty('a')).toBe(true);
