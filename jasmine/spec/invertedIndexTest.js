@@ -1,4 +1,4 @@
-var inverted, texts, parser;
+var inverted, texts, indexRunner;
 var indexRunner;
 
 beforeEach(function() {
@@ -13,7 +13,7 @@ beforeEach(function() {
     }
   ];
 
-  inverted = new getIndex();
+  inverted = new Index();
 });
 
 describe("Read book data,", function() {
@@ -24,47 +24,55 @@ describe("Read book data,", function() {
 
     expect(indexRunner).toBeDefined();
     expect(indexRunner).not.toBe(null);
-    expect(indexRunner).not.toEqual('');
-    expect(indexRunner).toContain("alice in wonderland alice falls into a rabbit hole and enters a world full of imagination.");
-    expect(indexRunner).toContain("the lord of the rings: the fellowship of the ring. an unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring.");
+    expect(typeof indexRunner).toEqual(typeof []);
+    expect(indexRunner)
+      .toContain("alice in wonderland alice falls into a rabbit hole and enters a world full of imagination.");
+    expect(indexRunner)
+      .toContain("the lord of the rings: the fellowship of the ring. an unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring.");
   });
 });
 
 describe("Populate Index,", function() {
 
   beforeEach(function() {
-    indexRunner = inverted.createIndex(texts);
 
+    inverted.createIndex(texts);
+    indexRunner = inverted.index;
   });
 
   it("should create index on JSON file read", function() {
 
-    console.log(indexRunner);
     expect(indexRunner).toBeDefined();
     expect(indexRunner).not.toBe(null);
-    expect(indexRunner).not.toEqual('');
-    expect(indexRunner).toContain([0]);
-    expect(indexRunner).toContain([0, 1]);
-    expect(indexRunner).toContain([1]);
+    expect(typeof indexRunner).toEqual(typeof {});
+    expect(indexRunner.hasOwnProperty('of')).toBe(true);
+    expect(indexRunner.hasOwnProperty('alice')).toBe(true);
+    expect(indexRunner.hasOwnProperty('wonderland')).toBe(true);
+    expect(indexRunner.hasOwnProperty('enters')).toBe(true);
+    expect(indexRunner.hasOwnProperty('unusual')).toBe(true);
+    expect(indexRunner.hasOwnProperty('wizard')).toBe(true);
+    expect(indexRunner.hasOwnProperty('a')).toBe(true);
+    expect(indexRunner.hasOwnProperty('ring')).toBe(true);
+    expect(indexRunner.hasOwnProperty('rings')).toBe(true);
+    expect(indexRunner.hasOwnProperty('dwarf')).toBe(true);
+    expect(indexRunner.hasOwnProperty('imagination')).toBe(true);
 
   });
 
   it("should map string keys to the correct object", function() {
 
-   parser = JSON.parse(indexRunner);
+    expect(indexRunner.alice).toEqual([0]);
+    expect(indexRunner.of).toEqual([0, 1]);
+    expect(indexRunner.into).toEqual([0]);
+    expect(indexRunner.hole).toEqual([0]);
+    expect(indexRunner.enters).toEqual([0]);
+    expect(indexRunner.fellowship).toEqual([1]);
+    expect(indexRunner.alliance).toEqual([1]);
+    expect(indexRunner.man).toEqual([1]);
+    expect(indexRunner.a).toEqual([0, 1]);
+    expect(indexRunner.hobbit).toEqual([1]);
+    expect(indexRunner.powerful).toEqual([1]);
 
-    expect(parser.hasOwnProperty('of')).toBe(true);
-    expect(parser.of).toEqual([0, 1]);
-    expect(parser.hasOwnProperty('a')).toBe(true);
-    expect(parser.a).toEqual([0, 1]);
-    expect(parser.hasOwnProperty('ring')).toBe(true);
-    expect(parser.ring).toEqual([1]);
-    expect(parser.hasOwnProperty('rings')).toBe(true);
-    expect(parser.rings).toEqual([1]);
-    expect(parser.hasOwnProperty('dwarf')).toBe(true);
-    expect(parser.dwarf).toEqual([1]);
-    expect(parser.hasOwnProperty('imagination')).toBe(true);
-    expect(parser.imagination).toEqual([0]);
   });
 
 });
@@ -75,11 +83,9 @@ describe("Search Index", function() {
 
     indexRunner = inverted.searchIndex(texts, "a lord RING Wonderland dwarf");
 
-    parser = JSON.parse(indexRunner);
-
-    expect(parser).toBeDefined();
-    expect(parser).not.toBe(null);
-    expect(parser).toEqual({
+    expect(indexRunner).toBeDefined();
+    expect(indexRunner).not.toBe(null);
+    expect(indexRunner).toEqual({
       a: [0, 1],
       lord: [1],
       ring: [1],

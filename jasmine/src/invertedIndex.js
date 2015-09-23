@@ -3,17 +3,17 @@ for the JQuery AJAX file reading functionality to
 work */
 
 // uncomment the variable and equate it to the file path to load file contents
-//var fileRef = 'books.json';
+//var dataSource = 'books.json';
 
 
 //main get index function
-var getIndex = function(file, stringKeys) {};
+var Index = function(source, searchKeys) {};
 
 //function to read file contents
-getIndex.prototype.readTexts = function(files) {
+Index.prototype.readTexts = function(files) {
 
   //check file type if its an array, variable or file path
-  var obj;
+  var bookData;
   if (typeof files === typeof '') {
 
     //syncronous ajax request to read file if it is a file path
@@ -22,39 +22,41 @@ getIndex.prototype.readTexts = function(files) {
       async: false,
       dataType: 'json',
       success: function(json) {
-        obj = json;
+        bookData = json;
       }
     });
 
   } else {
-    obj = files;
+    bookData = files;
   }
 
   //iterate trough JSON properties and push sentences to holding array
-  var k = 0, holder = [];
+  var k = 0,
+    holder = [];
   do {
     var grab = [];
-    for (var j in obj[k]) {
+    for (var j in bookData[k]) {
 
-      var collector = obj[k];
+      var collector = bookData[k];
       grab.push(collector[j].toLowerCase());
     }
     holder.push(grab.join(' '));
     k += 1;
   }
-  while (k < obj.length);
+  while (k < bookData.length);
 
   return holder;
 };
 
 //function for creating index
-getIndex.prototype.createIndex = function(file) {
+Index.prototype.createIndex = function(sourceFile) {
 
   //call the readTexts function to read contents
-  var holder = getIndex.prototype.readTexts(file);
- 
-  var result = {}, i, index = [];
- 
+  var holder = Index.prototype.readTexts(sourceFile);
+
+  var result = {},
+    i, index = [];
+
   //iterate through holder, split by all punctuations and push words to result
   for (i = 0; i < holder.length; i++) {
 
@@ -88,53 +90,53 @@ getIndex.prototype.createIndex = function(file) {
       }
     }
   }
-  //stringify all result and return
-  var toJSON = JSON.stringify(result);
 
-  return toJSON;
+  //store the results
+  this.index = result;
 };
 
-// index search function
-getIndex.prototype.searchIndex = function(files, stringKeys) {
+// this is the main search function it takes two arguement, data source
+// and keywords to be searched, 
+//returns two results, all indexes and indexes of search keys
 
-  var converter;
+Index.prototype.searchIndex = function(dataSource, searchKeys) {
+
   //check if keys is an array of strings or a string
-  if (typeof stringKeys === typeof []) {
+  if (typeof searchKeys === typeof []) {
     //join if its an array
-    converter = stringKeys.join();
-  } else {
-    converter = stringKeys;
+    searchKeys = searchKeys.join();
   }
   //convert string to lowercase and split
-  var lower = converter.toLowerCase();
-  var keys = lower.split(/[\s\W\d]+/g);
+  searchKeys = searchKeys.toLowerCase();
+  var keys = searchKeys.split(/[\s\W\d]+/g);
 
   //call the getIndex function 
-  var index = getIndex.prototype.createIndex(files);
+  //var allIndex = new 
+  Index.prototype.createIndex(dataSource);
 
-  //parse the returned index file;
+  var index = this.index;
 
-  var parser = JSON.parse(index);
-  
-  var indexes = {};
+  var keyIndexes = {};
 
   //check if the keys are in the index list;
-  for (var i = 0; i<keys.length; i++)
-    if (parser.hasOwnProperty(keys[i]) === true){
+  for (var i = 0; i < keys.length; i++)
+    if (index.hasOwnProperty(keys[i]) === true) {
 
-      indexes[keys[i]] = parser[keys[i]];
+      keyIndexes[keys[i]] = index[keys[i]];
     }
 
-    //log results to the console
-    console.log(JSON.stringify(indexes));
+    //log all indexes to the console
+  console.log(index);
 
-    //return for test purpose
-    return JSON.stringify(indexes);
+  //log search keyresults to the console
+  console.log(keyIndexes);
+
+  //return for test purpose
+  return keyIndexes;
 };
 
 
-//uncomment this function to run loaded files using the fileRef variable
+
+//the function below should be called on to run the creation and search
 // search keys can take a single word, sentences and an array of words 
-
-
-//getIndex.prototype.searchIndex(fileRef, "your keys");
+//Index.prototype.searchIndex(dataSource, 'search keys');
