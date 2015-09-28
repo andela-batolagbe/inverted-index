@@ -1,5 +1,5 @@
 /* This file require running it on HTTP Server
-for the JQuery AJAX file reading functionality to 
+for the JQuery AJAX file reading functionality to
 work */
 
 // uncomment the variable and equate it to the file path to load file contents
@@ -12,7 +12,7 @@ var Index = function(source, searchKeys) {};
 //function to read file contents
 Index.prototype.readTexts = function(files) {
 
-  //check file type if its an array, variable or file path
+  //check files type if its an array, variable or file path
   var bookData;
   if (typeof files === typeof '') {
 
@@ -27,20 +27,24 @@ Index.prototype.readTexts = function(files) {
     });
 
   } else {
-    bookData = files;
+    if (typeof files === typeof JSON && files !== null && files !== {}) {
+      bookData = files;
+    } else {
+      console.log('cannot read data, please provide a file path or JSON data')
+    }
   }
 
   //iterate trough JSON properties and push sentences to holding array
   var k = 0,
     holder = [];
   do {
-    var grab = [];
+    var bookTexts = [];
     for (var j in bookData[k]) {
 
       var collector = bookData[k];
-      grab.push(collector[j].toLowerCase());
+      bookTexts.push(collector[j].toLowerCase());
     }
-    holder.push(grab.join(' '));
+    holder.push(bookTexts.join(' '));
     k += 1;
   }
   while (k < bookData.length);
@@ -52,7 +56,7 @@ Index.prototype.readTexts = function(files) {
 Index.prototype.createIndex = function(sourceFile) {
 
   //call the readTexts function to read contents
-  var holder = Index.prototype.readTexts(sourceFile);
+  var holder = this.readTexts(sourceFile);
 
   var result = {},
     i, index = [];
@@ -74,7 +78,7 @@ Index.prototype.createIndex = function(sourceFile) {
 
     var pass = index[k];
 
-    //take each word and locate them in the entire document 
+    //take each word and locate them in the entire document
     for (var a = 0; a < pass.length; a++) {
 
       var holdArr = [];
@@ -96,23 +100,23 @@ Index.prototype.createIndex = function(sourceFile) {
 };
 
 // this is the main search function it takes two arguement, data source
-// and keywords to be searched, 
-//returns two results, all indexes and indexes of search keys
+// and keywords to be searched, returns two results, all indexes
+// and indexes of search keys
 
 Index.prototype.searchIndex = function(dataSource, searchKeys) {
 
   //check if keys is an array of strings or a string
-  if (typeof searchKeys === typeof []) {
+  if (typeof searchKeys === typeof [] && searchKeys !== null && searchKeys !== {}) {
     //join if its an array
-    searchKeys = searchKeys.join();
+    searchKeys = searchKeys.join('');
   }
   //convert string to lowercase and split
   searchKeys = searchKeys.toLowerCase();
   var keys = searchKeys.split(/[\s\W\d]+/g);
 
-  //call the getIndex function 
-  //var allIndex = new 
-  Index.prototype.createIndex(dataSource);
+  //use the create index property to create the indexes of words
+  //in the dataSource
+  this.createIndex(dataSource);
 
   var index = this.index;
 
@@ -125,18 +129,12 @@ Index.prototype.searchIndex = function(dataSource, searchKeys) {
       keyIndexes[keys[i]] = index[keys[i]];
     }
 
-    //log all indexes to the console
-  console.log(index);
-
-  //log search keyresults to the console
-  console.log(keyIndexes);
-
-  //return for test purpose
+    //return for test purpose
   return keyIndexes;
 };
 
 
 
 //the function below should be called on to run the creation and search
-// search keys can take a single word, sentences and an array of words 
+// search keys can take a single word, sentences and an array of words
 //Index.prototype.searchIndex(dataSource, 'search keys');
