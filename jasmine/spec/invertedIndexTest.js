@@ -1,22 +1,22 @@
 var inverted, texts, indexRunner;
 var indexRunner;
 
-beforeEach(function() {
-  texts = [{
-      "title": "Alice in Wonderland",
-      "text": "Alice falls into a rabbit hole and enters a world full of imagination."
-    },
-
-    {
-      "title": "The Lord of the Rings: The Fellowship of the Ring.",
-      "text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
-    }
-  ];
-
-  inverted = new Index();
-});
-
 describe("Read book data,", function() {
+
+  beforeEach(function() {
+
+    texts = [{
+        "title": "Alice in Wonderland",
+        "text": "Alice falls into a rabbit hole and enters a world full of imagination."
+      },
+
+      {
+        "title": "The Lord of the Rings: The Fellowship of the Ring.",
+        "text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
+      }
+    ];
+    inverted = new Index();
+  });
 
   it("should not be empty", function() {
 
@@ -35,7 +35,18 @@ describe("Read book data,", function() {
 describe("Populate Index,", function() {
 
   beforeEach(function() {
+    texts = [{
+        "title": "Alice in Wonderland",
+        "text": "Alice falls into a rabbit hole and enters a world full of imagination."
+      },
 
+      {
+        "title": "The Lord of the Rings: The Fellowship of the Ring.",
+        "text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
+      }
+    ];
+
+    inverted = new Index();
     inverted.createIndex(texts);
     indexRunner = inverted.index;
   });
@@ -45,39 +56,56 @@ describe("Populate Index,", function() {
     expect(indexRunner).toBeDefined();
     expect(indexRunner).not.toBe(null);
     expect(typeof indexRunner).toEqual(typeof {});
-    expect(indexRunner.hasOwnProperty('of')).toBe(true);
-    expect(indexRunner.hasOwnProperty('alice')).toBe(true);
-    expect(indexRunner.hasOwnProperty('wonderland')).toBe(true);
-    expect(indexRunner.hasOwnProperty('enters')).toBe(true);
-    expect(indexRunner.hasOwnProperty('unusual')).toBe(true);
-    expect(indexRunner.hasOwnProperty('wizard')).toBe(true);
-    expect(indexRunner.hasOwnProperty('a')).toBe(true);
-    expect(indexRunner.hasOwnProperty('ring')).toBe(true);
-    expect(indexRunner.hasOwnProperty('rings')).toBe(true);
-    expect(indexRunner.hasOwnProperty('dwarf')).toBe(true);
-    expect(indexRunner.hasOwnProperty('imagination')).toBe(true);
+    expect(indexRunner.hasOwnProperty('of')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('alice')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('wonderland')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('enters')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('unusual')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('wizard')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('a')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('ring')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('rings')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('dwarf')).toBeTruthy;
+    expect(indexRunner.hasOwnProperty('imagination')).toBeTruthy;
 
   });
 
   it("should map string keys to the correct object", function() {
 
-    expect(indexRunner.alice).toEqual([0]);
-    expect(indexRunner.of).toEqual([0, 1]);
-    expect(indexRunner.into).toEqual([0]);
-    expect(indexRunner.hole).toEqual([0]);
-    expect(indexRunner.enters).toEqual([0]);
-    expect(indexRunner.fellowship).toEqual([1]);
-    expect(indexRunner.alliance).toEqual([1]);
-    expect(indexRunner.man).toEqual([1]);
-    expect(indexRunner.a).toEqual([0, 1]);
-    expect(indexRunner.hobbit).toEqual([1]);
-    expect(indexRunner.powerful).toEqual([1]);
+    expect(indexRunner['alice']).toEqual([0]);
+    expect(indexRunner['of']).toEqual([0, 1]);
+    expect(indexRunner['into']).toEqual([0]);
+    expect(indexRunner['hole']).toEqual([0]);
+    expect(indexRunner['enters']).toEqual([0]);
+    expect(indexRunner['fellowship']).toEqual([1]);
+    expect(indexRunner['alliance']).toEqual([1]);
+    expect(indexRunner['man']).toEqual([1]);
+    expect(indexRunner['a']).toEqual([0, 1]);
+    expect(indexRunner['hobbit']).toEqual([1]);
+    expect(indexRunner['powerful']).toEqual([1]);
 
   });
 
 });
 
 describe("Search Index", function() {
+
+  beforeEach(function() {
+
+    texts = [{
+        "title": "Alice in Wonderland",
+        "text": "Alice falls into a rabbit hole and enters a world full of imagination."
+      },
+
+      {
+        "title": "The Lord of the Rings: The Fellowship of the Ring.",
+        "text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
+      }
+    ];
+
+    inverted = new Index();
+
+  });
 
   it("should return an array of the indices of the correct objects", function() {
 
